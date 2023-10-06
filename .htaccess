@@ -1,0 +1,9 @@
+Options -Indexes
+
+RewriteEngine On
+
+RewriteRule ^public/ - [L]
+
+RewriteRule ^\.htaccess$ - [F]
+
+RewriteRule ^(assets|src)/ - [F]
