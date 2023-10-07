@@ -11,3 +11,9 @@ const HASH_ALGORITHM = "sha3-256";
 const PRIMARY_SIZE = 32;
 const SECONDARY_SIZE = 16;
 const ITERATION = 10000;
+
+// Database module's constant
+const DB_USERNAME = "root";
+const DB_PASSWORD = "";
+const DATABASE = "diary";
+const HOSTNAME = "localhost";

@@ -1,6 +1,6 @@
 <?php
 /**
- * Encryption module contain functions related to encryption and security for this project
+ * Encryption module contains functions related to encryption and security for this project
  *
  * @author Reishandy (isthisruxury@gmail.com)
  */
@@ -31,9 +31,9 @@ function generateSecondaryKey(): string
 /**
  * This function is used to encrypt string with openssl_encrypt and using AES-256 Algorithm
  *
- * @param $plaintext string String to be encrypted
- * @param $key string Key used to encrypt, must be in the form of bytes
- * @param $iv string Initialization vector used to encrypt, must be in the form of bytes
+ * @param string $plaintext String to be encrypted
+ * @param string $key Key used to encrypt, must be in the form of bytes
+ * @param string $iv vector used to encrypt, must be in the form of bytes
  * @return false|string The encrypted plaintext, or false as failure
  * @author Reishandy (isthisruxury@gmail.com)
  */
@@ -45,9 +45,9 @@ function encrypt(string $plaintext, string $key, string $iv): false|string
 /**
  * This function is used to decrypt an encrypted string with openssl_encrypt and using AES-256 Algorithm
  *
- * @param $ciphertext string String to be decrypted
- * @param $key string key used to decrypt, must be in the form of bytes
- * @param $iv string Initialization vector used to decrypt, must be in the form of bytes
+ * @param string $ciphertext String to be decrypted
+ * @param string $key Key used to decrypt, must be in the form of bytes
+ * @param string $iv Initialization vector used to decrypt, must be in the form of bytes
  * @return false|string The decrypted ciphertext, or false as failure
  * @author Reishandy (isthisruxury@gmail.com)
  */
@@ -64,8 +64,8 @@ function decrypt(string $ciphertext, string $key, string $iv): false|string
  * will return an array containing the encrypted key, salt used to derive the jey from the password, and iv for
  * encryption that is tied to this specific key, all the return values are in the form of base64 string.
  *
- * @param $key string Key to be encrypted, in the form of bytes
- * @param $password string String used as derivative for the key to encryption
+ * @param string $key Key to be encrypted, in the form of bytes
+ * @param string $password String used as derivative for the key to encryption
  * @return array [0: encrypted key base64, 1: salt base64, 2: iv base64]
  * @author Reishandy (isthisruxury@gmail.com)
  */
@@ -73,8 +73,8 @@ function encryptKey(string $key, string $password): array
 {
     $keyString = base64_encode($key);
 
-    $salt = openssl_random_pseudo_bytes(SECONDARY_SIZE);
-    $iv = openssl_random_pseudo_bytes(SECONDARY_SIZE);
+    $salt = generateSecondaryKey();
+    $iv = generateSecondaryKey();
 
     $userKey = hash_pbkdf2(HASH_ALGORITHM, $password, $salt, ITERATION, PRIMARY_SIZE);
     $encryptedKey = openssl_encrypt($keyString, ENCRYPTION_ALGORITHM, $userKey, 0, $iv);
@@ -92,10 +92,10 @@ function encryptKey(string $key, string $password): array
  * same key derived from the password. Then this function will decrypt the encrypted key with the iv and derived key from
  * password that will result in a base64 encoded bytes, which this function will decode first before being returned.
  *
- * @param $password string String used as derivative for key decryption
- * @param $encryptedKey string Base64 encoded and encrypted key, originally bytes
- * @param $salt string Base64 encoded salt, originally bytes
- * @param $iv string Base64 encoded iv, originally bytes
+ * @param string $password String used as derivative for key decryption
+ * @param string $encryptedKey Base64 encoded and encrypted key, originally bytes
+ * @param string $salt Base64 encoded salt, originally bytes
+ * @param string $iv Base64 encoded iv, originally bytes
  * @return false|string Decrypted key in the form of bytes
  * @author Reishandy (isthisruxury@gmail.com)
  */
