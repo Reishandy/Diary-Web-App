@@ -4,7 +4,9 @@
  *
  * @author Reishandy (isthisruxury@gmail.com)
  */
-session_start();
+if (session_status() == PHP_SESSION_DISABLED) {
+    session_start();
+}
 
 /**
  * Function to check if the current session is active or not
@@ -17,12 +19,23 @@ session_start();
  */
 function checkSession(): bool
 {
-    session_start();
     if (isset($_SESSION["username"]) && isset($_SESSION["key"])) {
         return true;
     } else {
         return false;
     }
+}
+
+/**
+ * Function to unset variables and destroy current session
+ *
+ * @author Reishandy (isthisruxury@gmail.com)
+ */
+function destroySession(): void
+{
+    session_start();
+    session_unset();
+    session_destroy();
 }
 
 /**

@@ -5,8 +5,8 @@
  * @author Reishandy (isthisruxury@gmail.com)
  */
 require_once "../../src/config/config.php";
-require_once "../../src/session/session.php";
 require_once "../../src/security/encryption.php";
+require "../../src/session/session.php";
 
 /**
  * Function to create a new user and insert it into the database
@@ -42,14 +42,17 @@ function addUser(string $username, string $password): int
         return 1;
     }
 
+    // Create key
     $key = generateKey();
     $encryptedKeyArray = encryptKey($key, $password);
 
+    // Prepare data to be inserted into database
     $hashedPassword = password_hash($password, PASSWORD_ARGON2ID);
     $encryptedKey = $encryptedKeyArray[0];
     $salt = $encryptedKeyArray[1];
     $iv = $encryptedKeyArray[2];
 
+    // Insert into database
     $statement = $dbh->prepare("INSERT INTO users (username, password, main_key, salt, iv) VALUES (?, ?, ?, ?, ?)");
     $statement->bind_param("sssss", $username, $hashedPassword, $encryptedKey, $salt, $iv);
 
@@ -59,43 +62,60 @@ function addUser(string $username, string $password): int
 }
 
 /**
+ * Function to authenticate user, get user data, and store user data to session
  *
+ * This function is used to authenticate user by first checking if a user exists inside the database then verifying the
+ * password with a stored and hashed password form database, then this function will get and decrypt the main key with
+ * the provided salt, iv, and password.
+ * After that is done, the main key and username will be stored inside the current session.
+ *
+ * @param string $username User's username
+ * @param string $password User's password
+ * @return int Return status indication => 0: success, 1: user not found, 2: wrong password, -1: database not connected
+ * @author Reishandy (isthisruxury@gmail.com)
  */
 function getUser(string $username, string $password): int
 {
-    // TODO: init database connection
+    // Handle connection error
+    try {
+        $dbh = new mysqli(HOSTNAME, DB_USERNAME, DB_PASSWORD, DATABASE);
+    } catch (mysqli_sql_exception) {
+        return -1;
+    }
 
-    // TODO: query all username and id
-    //      - search username parameter in query list
-    //      - return 1 if not found
-    //      - if found continue and save the id
+    // Get user data from querying the username in database
+    $statement = $dbh->prepare("SELECT * FROM users WHERE username = ?");
+    $statement->bind_param("s", $username);
 
-    // TODO: get all data from saved id
-    //      - only one row
+    $statement->execute();
+    $result = $statement->get_result();
 
-    // TODO: verify parameter password with hashed password form database
-    //      - use hash_verify()
-    //      - if doesn't match, return 2 for wrong password
-    //      - else continue
+    // If there is a result, get the user data. If not, return 1 to signal that the user is not found
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
 
-    // TODO: decrypt the main key
-    //      - use decryptKey() with salt and iv straight from database
+        $hashedPassword = $row["password"];
+        $encryptedMainKey = $row["main_key"];
+        $salt = $row["salt"];
+        $iv = $row["iv"];
 
-    // TODO: store key and username to session
-    //      - store to session with session.php storeKey()
+        $dbh->close();
+    } else {
+        $dbh->close();
+        return 1;
+    }
 
-    // TODO: close database connection
+    // Check if the password matches, if not returns 2 to signal the password is not correct
+    if (!password_verify($password, $hashedPassword)) {
+        return 2;
+    }
+
+    // Decrypt the main key
+    $mainKey = decryptKey($password, $encryptedMainKey, $salt, $iv);
+
+    // Store key and username
+    storeKey($mainKey);
+    storeUsername($username);
+
     return 0;
 }
-
-// TODO: remove test
-$res = addUser("Rei", "Rei");
-if ($res == 0) {
-    echo "success";
-} elseif ($res == 1) {
-    echo "username taken";
-} elseif ($res == -1) {
-    echo "database not connected";
-}
-
-echo "<br><hr><br>";
