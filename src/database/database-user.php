@@ -6,7 +6,7 @@
  */
 require_once "../../src/config/config.php";
 require_once "../../src/security/encryption.php";
-require "../../src/session/session.php";
+require_once "../../src/session/session.php";
 
 /**
  * Function to create a new user and insert it into the database
