@@ -17,3 +17,6 @@ const DB_USERNAME = "root";
 const DB_PASSWORD = "";
 const DATABASE = "diary";
 const HOSTNAME = "localhost";
+
+// Session module's constant
+const TIMEOUT = 10800; // 3 Hour

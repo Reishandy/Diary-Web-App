@@ -4,8 +4,19 @@
  *
  * @author Reishandy (isthisruxury@gmail.com)
  */
+require_once "../../src/config/config.php";
 if (session_status() == PHP_SESSION_DISABLED) {
     session_start();
+}
+
+/**
+ * Function to set login timestamp for session timeout purposes
+ *
+ * @author Reishandy (isthisruxury@gmail.com)
+ */
+function setTimeStamp(): void
+{
+    $_SESSION["login_time_stamp"] = time();
 }
 
 /**
@@ -19,9 +30,15 @@ if (session_status() == PHP_SESSION_DISABLED) {
  */
 function checkSession(): bool
 {
-    if (isset($_SESSION["username"]) && isset($_SESSION["key"])) {
-        return true;
+    if (isset($_SESSION["username"]) && isset($_SESSION["key"]) && isset($_SESSION["login_time_stamp"])) {
+        if (time() - $_SESSION["login_time_stamp"] > TIMEOUT) {
+            destroySession();
+            return false;
+        } else {
+            return true;
+        }
     } else {
+        destroySession();
         return false;
     }
 }
@@ -46,6 +63,7 @@ function destroySession(): void
  */
 function storeKey(string $key): void
 {
+    setTimeStamp();
     $_SESSION["key"] = $key;
 }
 
@@ -57,6 +75,7 @@ function storeKey(string $key): void
  */
 function getKey(): string
 {
+    setTimeStamp();
     return $_SESSION["key"];
 }
 
@@ -68,6 +87,7 @@ function getKey(): string
  */
 function storeUsername(string $username): void
 {
+    setTimeStamp();
     $_SESSION["username"] = $username;
 }
 
@@ -79,5 +99,6 @@ function storeUsername(string $username): void
  */
 function getUsername(): string
 {
+    setTimeStamp();
     return $_SESSION["username"];
 }
