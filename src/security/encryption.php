@@ -77,7 +77,7 @@ function encryptKey(string $key, string $password): array
     $iv = generateSecondaryKey();
 
     $userKey = hash_pbkdf2(HASH_ALGORITHM, $password, $salt, ITERATION, PRIMARY_SIZE);
-    $encryptedKey = openssl_encrypt($keyString, ENCRYPTION_ALGORITHM, $userKey, 0, $iv);
+    $encryptedKey = encrypt($keyString, $userKey, $iv);
 
 
     return [$encryptedKey, base64_encode($salt), base64_encode($iv)];
@@ -105,7 +105,57 @@ function decryptKey(string $password, string $encryptedKey, string $salt, string
     $iv = base64_decode($iv);
 
     $userKey = hash_pbkdf2(HASH_ALGORITHM, $password, $salt, ITERATION, PRIMARY_SIZE);
-    $decryptedKey = openssl_decrypt($encryptedKey, ENCRYPTION_ALGORITHM, $userKey, 0, $iv);
+    $decryptedKey = decrypt($encryptedKey, $userKey, $iv);
 
     return base64_decode($decryptedKey);
+}
+
+/**
+ * Used to encrypt diary content, mood, and tags
+ *
+ * This function will encrypt the diary content, mood, and tags with the main key and iv, the main key is from stored
+ * key session, and the iv is randomly generated.
+ * The return value will be an array containing the encrypted content,
+ * mood, tags, and iv in the form of base64 string.
+ *
+ * @param string $key Main key used to encrypt
+ * @param string $content Diary content to be encrypted
+ * @param string $mood Diary mood to be encrypted
+ * @param string $tags Diary tags to be encrypted
+ * @return array [0: encrypted content base64, 1: encrypted mood base64, 2: encrypted tags base64, 3: iv base64]
+ * @author Reishandy (isthisruxury@gmail.com)
+ */
+function encryptDiary(string $key, string $content, string $mood, string $tags): array
+{
+    $iv = generateSecondaryKey();
+    $encryptedContent = encrypt($content, $key, $iv);
+    $encryptedMood = encrypt($mood, $key, $iv);
+    $encryptedTags = encrypt($tags, $key, $iv);
+
+    return [$encryptedContent, $encryptedMood, $encryptedTags, base64_encode($iv)];
+}
+
+/**
+ * Used to decrypt diary content, mood, and tags
+ *
+ * This function will decrypt the diary content, mood, and tags with the main key and iv, the main key is from stored
+ * key session, and the iv is from the inputted iv. The return value will be an array containing the decrypted content,
+ * mood, and tags. All return values are in the form of string.
+ *
+ * @param string $key Main key used to decrypt
+ * @param string $encryptedContent Encrypted content to be decrypted
+ * @param string $encryptedMood Encrypted mood to be decrypted
+ * @param string $encryptedTags Encrypted tags to be decrypted
+ * @param string $iv Initialization vector used to decrypt, generated from encryptDiary()
+ * @return false[]|string[]
+ * @author Reishandy (isthisruxury@gmail.com)
+ */
+function decryptDiary(string $key, string $encryptedContent, string $encryptedMood, string $encryptedTags, string $iv): array
+{
+    $iv = base64_decode($iv);
+    $content = decrypt($encryptedContent, $key, $iv);
+    $mood = decrypt($encryptedMood, $key, $iv);
+    $tags = decrypt($encryptedTags, $key, $iv);
+
+    return [$content, $mood, $tags];
 }
