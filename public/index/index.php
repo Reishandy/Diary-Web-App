@@ -41,12 +41,26 @@ switch ($action) {
         session();
         break;
     default:
-        echo "<center><h1>ERROR</h1></center>";
+        // TODO: redirect to 404 page
+        echo "404";
 }
 
 
 /**
  * Action handler, collection of functions used to handle specific action
+ */
+/**
+ * Function to handle login action
+ *
+ * This function will handle the login action by getting the username and password from the POST request, then it will
+ * call the getUser() function from database-user.php to check if the username and password are correct or not.
+ * If the username and password are correct, then it will redirect to the main menu, else it will redirect back to
+ * log in page within an error message as the parameter to indicate the error type (username or password) and then
+ * exit the program.
+ * If the database is not connected, then it will call the databaseNotConnectedHandler() function to handle the error.
+ *
+ * @return void
+ * @author Reishandy (isthisruxury@gmail.com)
  */
 function loginHandler(): void
 {
@@ -72,6 +86,22 @@ function loginHandler(): void
     }
 }
 
+/**
+ * Function to handle register action
+ *
+ * This function will handle the register action by getting the username, password, and re-password from the POST
+ * request, then it will call the addUser() function from database-user.php to add the user to the database.
+ * If the username is already taken, then it will redirect back to register page within an error message as the
+ * parameter to indicate the error type (username) and then exit the program. If the password is less than eight characters,
+ * then it will redirect back to register page within an error message as the parameter to indicate the error type
+ * (password) and then exit the program. If the re-password does not match with the password, then it will redirect back
+ * to register page within an error message as the parameter to indicate the error type (re-password) and then exit the
+ * program. If the database is not connected, then it will call the databaseNotConnectedHandler() function to handle the
+ * error.
+ *
+ * @return void
+ * @author Reishandy (isthisruxury@gmail.com)
+ */
 function registerHandler(): void
 {
     $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -111,11 +141,29 @@ function registerHandler(): void
 /**
  * Utility functions, collection of functions to support the main hub or action handler
  */
+/**
+ * Function to handle a database not connected error
+ *
+ * This function will handle the database not connected error by displaying a message and then exit the program.
+ *
+ * @return void
+ * @author Reishandy (isthisruxury@gmail.com)
+ */
 #[NoReturn] function databaseNotConnectedHandler(): void
 {
-    die("<center><h1>DATABASE NOT CONNECTED</h1></center>");
+    die("<h1 style='text-align: center'>DATABASE NOT CONNECTED</h1>");
 }
 
+/**
+ * Function to check if the current session is active or not
+ *
+ * This function uses "username" and "key" session variable to check if the session is active by using the checkSession()
+ * function that returns true if both variables are set else it will return false. If the session is not active, then it
+ * will destroy the current session and redirect to the login page.
+ *
+ * @return void
+ * @author Reishandy (isthisruxury@gmail.com)
+ */
 function session(): void
 {
     if (!checkSession()) {
