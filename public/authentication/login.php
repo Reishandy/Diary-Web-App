@@ -40,6 +40,8 @@
             margin-bottom: 20px;
         }
     </style>
+
+    <?php session_start() ?>
 </head>
 <body>
 

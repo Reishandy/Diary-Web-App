@@ -5,9 +5,6 @@
  * @author Reishandy (isthisruxury@gmail.com)
  */
 require_once "../../src/config/config.php";
-if (session_status() == PHP_SESSION_DISABLED) {
-    session_start();
-}
 
 /**
  * Function to set login timestamp for session timeout purposes

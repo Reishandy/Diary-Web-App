@@ -114,6 +114,7 @@ function getUser(string $username, string $password): int
     $mainKey = decryptKey($password, $encryptedMainKey, $salt, $iv);
 
     // Store key and username
+    session_start();
     storeKey($mainKey);
     storeUsername($username);
 
