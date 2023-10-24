@@ -113,6 +113,11 @@ function registerHandler(): void
         exit();
     }
 
+    if (!preg_match("/^[a-zA-Z0-9_]*$/", $username)) {
+        header("Location: ../../public/authentication/register.php?username_error=Username must be alphanumeric and only contain underscore");
+        exit();
+    }
+
     if (strlen($password) < 8) {
         header("Location: ../../public/authentication/register.php?password_error=Must be more than 8 character");
         exit();
