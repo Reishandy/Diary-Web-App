@@ -14,6 +14,7 @@ require_once "../../src/session/session.php";
  * This function will create a new user from the inputted username and password, the newly created user will have an
  * AES-256 main key and also salt and iv for securing the main key. The data that will be inserted into the database are
  * username, password hashed with argon2id, main key encrypted with encryptKey(), salt and iv for decrypting the main key.
+ * After that is done, this function will create a new table for the user to store diary entries.
  *
  * @param string $username Username for the new user
  * @param string $password Password for the new user
@@ -55,8 +56,20 @@ function addUser(string $username, string $password): int
     // Insert into database
     $statement = $dbh->prepare("INSERT INTO users (username, password, main_key, salt, iv) VALUES (?, ?, ?, ?, ?)");
     $statement->bind_param("sssss", $username, $hashedPassword, $encryptedKey, $salt, $iv);
-
     $statement->execute();
+
+    // Create user's specific table for storing diary entries
+    $tableStatement = $dbh->prepare("CREATE TABLE $username (
+        id INT(11) AUTO_INCREMENT PRIMARY KEY,
+        date DATETIME NOT NULL,
+        date_modified DATETIME NOT NULL,
+        content TEXT NOT NULL,
+        mood VARCHAR(10) NOT NULL,
+        tags TEXT NOT NULL,
+        iv VARCHAR(24) NOT NULL
+    )");
+    $tableStatement->execute();
+
     $dbh->close();
     return 0;
 }
@@ -65,7 +78,7 @@ function addUser(string $username, string $password): int
  * Function to authenticate user, get user data, and store user data to session
  *
  * This function is used to authenticate user by first checking if a user exists inside the database then verifying the
- * password with a stored and hashed password form database, then this function will get and decrypt the main key with
+ * password with a stored and hashed password form database. Then this function will get and decrypt the main key with
  * the provided salt, iv, and password.
  * After that is done, the main key and username will be stored inside the current session.
  *
