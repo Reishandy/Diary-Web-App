@@ -54,7 +54,8 @@ switch ($action) {
  *
  * This function will handle the login action by getting the username and password from the POST request, then it will
  * call the getUser() function from database-user.php to check if the username and password are correct or not.
- * If the username and password are correct, then it will redirect to the main menu, else it will redirect back to
+ * If the username and password are correct.
+ * Then it will redirect to the main menu, else it will redirect back to
  * log in page within an error message as the parameter to indicate the error type (username or password) and then
  * exit the program.
  * If the database is not connected, then it will call the databaseNotConnectedHandler() function to handle the error.
@@ -76,10 +77,10 @@ function loginHandler(): void
             echo getUsername();
             break;
         case 1:
-            header("Location: ../../public/authentication/login.php?username_error=true");
+            header("Location: ../../public/authentication/auth.php?login=true&login_username_error=Cannot find user");
             exit();
         case 2:
-            header("Location: ../../public/authentication/login.php?password_error=true");
+            header("Location: ../../public/authentication/auth.php?login=true&login_password_error=Wrong password");
             exit();
         case -1:
             databaseNotConnectedHandler();
@@ -109,22 +110,22 @@ function registerHandler(): void
     $rePassword = filter_input(INPUT_POST, 're-password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
     if (strlen($username) < 3) {
-        header("Location: ../../public/authentication/register.php?username_error=Must be more than 3 character");
+        header("Location: ../../public/authentication/auth.php?register_username_error=Must be more than 3 character");
         exit();
     }
 
     if (!preg_match("/^[a-zA-Z0-9_]*$/", $username)) {
-        header("Location: ../../public/authentication/register.php?username_error=Username must be alphanumeric and only contain underscore");
+        header("Location: ../../public/authentication/auth.php?register_username_error=Username must be alphanumeric and only contain underscore");
         exit();
     }
 
     if (strlen($password) < 8) {
-        header("Location: ../../public/authentication/register.php?password_error=Must be more than 8 character");
+        header("Location: ../../public/authentication/auth.php?register_password_error=Must be more than 8 character");
         exit();
     }
 
     if ($rePassword != $password) {
-        header("Location: ../../public/authentication/register.php?re-password_error=Password does not match");
+        header("Location: ../../public/authentication/auth.php?register_re-password_error=Password does not match");
         exit();
     }
 
@@ -132,10 +133,10 @@ function registerHandler(): void
 
     switch ($status) {
         case 0:
-            header("Location: ../../public/authentication/login.php");
+            header("Location: ../../public/authentication/auth.php?login=true");
             exit();
         case 1:
-            header("Location: ../../public/authentication/register.php?username_error=Username already taken");
+            header("Location: ../../public/authentication/auth.php?register_username_error=Username already taken");
             exit();
         case -1:
             databaseNotConnectedHandler();
