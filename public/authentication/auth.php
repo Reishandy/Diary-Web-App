@@ -16,6 +16,7 @@
     <title>Authentication</title>
     <link rel="stylesheet" href="../../public/css/auth.css">
 
+    <link rel="shortcut icon" href="../../assets/favlogo.svg" type="image/svg+xml">
 </head>
 <body>
 <div class="main">
@@ -24,8 +25,8 @@
     >
 
     <div class="signup">
-        <form action="../../public/index/index.php" method="post">
-            <label for="chk" aria-hidden="true">Register</label>
+        <form action="../index/handler.php" method="post">
+            <label for="chk" aria-hidden="true">Sign up</label>
             <input type="hidden" name="action" value="register">
 
             <input type="text" name="username" placeholder="User name" required="">
@@ -37,13 +38,13 @@
             <input type="password" name="re-password" placeholder="Re input Password" required="">
             <?php if (isset($_GET["register_re-password_error"])) echo "<p>" . $_GET["register_re-password_error"] . "</p>"; ?>
 
-            <button type="submit">Sign up</button>
+            <button type="submit" class="btn btn-primary">Sign up</button>
         </form>
     </div>
 
     <div class="login">
-        <form action="../../public/index/index.php" method="post">
-            <label for="chk" aria-hidden="true">Login</label>
+        <form action="../index/handler.php" method="post">
+            <label for="chk" aria-hidden="true">Sign in</label>
             <input type="hidden" name="action" value="login">
 
             <input type="text" name="username" placeholder="User Name" required>
@@ -52,7 +53,7 @@
             <input type="password" name="password" placeholder="Password" required>
             <?php if (isset($_GET["login_password_error"])) echo "<p>" . $_GET["login_password_error"] . "</p>"; ?>
 
-            <button type="submit">Login</button>
+            <button type="submit" class="btn btn-primary">Sign in</button>
         </form>
     </div>
 </div>

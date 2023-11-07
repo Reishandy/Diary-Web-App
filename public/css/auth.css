@@ -6,7 +6,7 @@ body {
     align-items: center;
     min-height: 100vh;
     font-family: 'Jost', sans-serif;
-    background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+    background: linear-gradient(to bottom, #A7A9E5, hsl(288, 100%, 59%));
 }
 
 .main {
@@ -58,8 +58,8 @@ button {
     height: 40px;
     justify-content: center;
     display: block;
-    color: #fff;
-    background: #573b8a;
+    color: white;
+    background: hsl(240, 6%, 10%);
     font-size: 1em;
     font-weight: bold;
     margin: 20px auto 10px;
@@ -83,12 +83,12 @@ button:hover {
 }
 
 .login label {
-    color: #573b8a;
-    transform: scale(.6) translateY(20px);
+    color: black;
+    transform: scale(.6) translateY(10px);
 }
 
 #chk:checked ~ .login {
-    transform: translateY(-500px);
+    transform: translateY(-550px);
 }
 
 #chk:checked ~ .login label {
@@ -96,7 +96,7 @@ button:hover {
 }
 
 #chk:checked ~ .signup label {
-    transform: scale(.6);
+    transform: scale(.6) translateY(-80px);
 }
 
 /*Added style, Reishandy (isthisruxury@gmail.com)*/
