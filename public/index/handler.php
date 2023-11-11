@@ -20,6 +20,9 @@ if (session_status() == PHP_SESSION_DISABLED) {
     session_start();
 }
 
+// Set timezone to Makassar (can be changed)
+date_default_timezone_set("Asia/Makassar");
+
 /**
  * Main hub, used to handle action redirection and session checker
  */
