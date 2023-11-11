@@ -61,10 +61,10 @@ function addUser(string $username, string $password): int
     // Create user's specific table for storing diary entries
     $tableStatement = $dbh->prepare("CREATE TABLE $username (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        date DATETIME NOT NULL,
+        date DATE NOT NULL,
         date_modified DATETIME NOT NULL,
         content TEXT NOT NULL,
-        mood VARCHAR(10) NOT NULL,
+        mood TEXT NOT NULL,
         tags TEXT NOT NULL,
         iv VARCHAR(24) NOT NULL
     )");
