@@ -11,6 +11,7 @@
 use JetBrains\PhpStorm\NoReturn;
 
 require_once "../../src/database/database-user.php";
+require_once "../../src/database/database-diary.php";
 require_once "../../src/session/session.php";
 require_once "../../src/config/config.php";
 
@@ -39,6 +40,15 @@ switch ($action) {
         break;
     case "register":
         registerHandler();
+        break;
+    case "add":
+        addHandler();
+        break;
+    case "modify":
+        modifyHandler();
+        break;
+    case "delete":
+        deleteHandler();
         break;
     case "":
         session();
@@ -75,9 +85,8 @@ function loginHandler(): void
 
     switch ($status) {
         case 0:
-            // TODO: redirect to main menu
-            echo "Login successful<br>";
             echo getUsername();
+            header("Location: ../../public/main/main-prototype.php");
             break;
         case 1:
             header("Location: ../../public/authentication/auth.php?login=true&login_username_error=Cannot find user");
@@ -117,8 +126,8 @@ function registerHandler(): void
         exit();
     }
 
-    if (!preg_match("/^[a-zA-Z0-9_]*$/", $username)) {
-        header("Location: ../../public/authentication/auth.php?register_username_error=Username must be alphanumeric and only contain underscore");
+    if (!preg_match("/^[a-zA-Z_]*$/", $username)) {
+        header("Location: ../../public/authentication/auth.php?register_username_error=Username must be alphabetic and only contain underscore");
         exit();
     }
 
@@ -141,6 +150,59 @@ function registerHandler(): void
         case 1:
             header("Location: ../../public/authentication/auth.php?register_username_error=Username already taken");
             exit();
+        case -1:
+            databaseNotConnectedHandler();
+    }
+}
+
+/**
+ * Prototype
+ */
+function addHandler(): void
+{
+    $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $mood = filter_input(INPUT_POST, 'mood', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $tags = filter_input(INPUT_POST, 'tags', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    $status = addDiary($content, $mood, $tags);
+
+    switch ($status) {
+        case 0:
+            header("Location: ../../public/main/main-prototype.php");
+            break;
+        case -1:
+            databaseNotConnectedHandler();
+    }
+}
+
+function modifyHandler(): void
+{
+    $id = $_POST["id"];
+    $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $mood = filter_input(INPUT_POST, 'mood', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $tags = filter_input(INPUT_POST, 'tags', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    $status = modifyDiary($id, $content, $mood, $tags);
+
+    switch ($status) {
+        case 0:
+            header("Location: ../../public/main/main-prototype.php");
+            break;
+        case -1:
+            databaseNotConnectedHandler();
+    }
+}
+
+function deleteHandler(): void
+{
+    $id = $_POST["id"];
+
+    $status = deleteDiary($id);
+
+    switch ($status) {
+        case 0:
+            header("Location: ../../public/main/main-prototype.php");
+            break;
         case -1:
             databaseNotConnectedHandler();
     }
@@ -177,7 +239,7 @@ function session(): void
 {
     if (!checkSession()) {
         destroySession();
-        header("Location: ../../public/authentication/login.php");
+        header("Location: ../../public/authentication/auth.php");
         exit();
     }
 }
